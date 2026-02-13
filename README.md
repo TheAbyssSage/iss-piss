@@ -22,12 +22,6 @@ A PHP-based web application for monitoring the International Space Station's was
   - Missing data scenarios
 - **Timezone Support**: Displays timestamps in UTC with proper formatting
 
-### Themes
-- **Default Mode**: Clean, professional Bootstrap design
-- **Astronaut Mode**: 
-  - Dark space theme with animated starry background
-  - Neon green accents with glowing text effects
-  - Toggle via button or cookie persistence
 
 ## Project Structure
 
@@ -49,6 +43,7 @@ iss-piss/
 ### Prerequisites
 - PHP 8.0 or higher
 - cURL extension enabled
+
 
 ### Quick Start
 
@@ -83,6 +78,7 @@ All configuration is centralized in `config.php`:
 | `CACHE_FILE_PATH` | `storage/last_tank_status.json` | Cache location |
 | `DISPLAY_TIMEZONE` | `UTC` | Timezone for timestamps |
 
+
 ## Architecture & Design Decisions
 
 ### Request Flow
@@ -93,63 +89,16 @@ All configuration is centralized in `config.php`:
 5. `index.php` renders Bootstrap page with status data
 6. HTML meta tag causes auto-refresh after configured interval
 
-### Boundary Between Untrusted and Trusted Data
-
-**Untrusted Data (External API)**:
-- All API responses are validated before use
-- Fields are sanitized and type-checked
-- Missing fields get sensible defaults
-- Invalid responses trigger error handling
-
-**Trust Boundary**: `TelemetryClient::parseApiResponse()`
-
-**Trusted Data** (Application Domain):
-- `TankStatus` objects with validated data
-- All values clamped to safe ranges (0-100%)
-- Timestamps parsed and formatted safely
-
-### Security Considerations
-
-1. **No Secrets in HTML**: 
-   - Configuration stays server-side
-   - No API keys exposed to client
-
-2. **Input Validation**:
-   - Theme mode validated against whitelist
-   - API responses sanitized before use
-
-3. **Output Escaping**:
-   - All user-facing data escaped with `htmlspecialchars()`
-   - XSS prevention in status messages
-
-4. **HTTPS**: 
-   - cURL configured to verify SSL certificates
-   - Prevents MITM attacks on API calls
-
-5. **File Permissions**:
-   - Cache directory created with 0755 permissions
-   - Write operations use `LOCK_EX` flag
 
 ### Reliability Patterns
 
-#### 1. **Caching Strategy**
-```
-Try Remote API
-    ↓ Success
-Save to Cache → Return Fresh Data
-    ↓ Failure
-Load Cache → Mark as Stale → Return Cached Data
-    ↓ No Cache
-Return Error State (0%, error status)
-```
-
-#### 2. **Error Handling Levels**
+#### 1. **Error Handling Levels**
 - **Network Errors**: Caught by cURL timeout and error checking
 - **Invalid JSON**: Handled by json_decode validation
 - **Missing Fields**: Default values prevent crashes
 - **File I/O Errors**: Logged but don't break the UI
 
-#### 3. **Graceful Degradation**
+#### 2. **Graceful Degradation**
 - First run with no cache: Shows "Telemetry Link Lost" message
 - API down with cache: Shows last known data with "stale" warning
 - API up: Normal operation with green indicators
@@ -163,65 +112,8 @@ Return Error State (0%, error status)
 - Alert components for status messages
 - Badges for mode indicators
 
-### Pure CSS Features
-- **Blinking Animation**: `@keyframes blink-warning` (no JS)
-- **Starfield Animation**: Moving gradient background in astronaut mode
-- **Theme Switching**: CSS variables + data attributes
-- **Responsive Design**: Mobile-friendly breakpoints
-
-### Color Coding Logic
-| Tank Level | Color | Bootstrap Class | Meaning |
-|------------|-------|----------------|---------|
-| 0-69% | Green | `bg-success` | Normal operation |
-| 70-89% | Yellow | `bg-warning` | Caution needed |
-| 90-100% | Red | `bg-danger` | Critical - urgent attention |
-
-## Testing Scenarios
-
-### Scenario 1: First Run (No Cache, API Available)
-- **Expected**: Fetch from API, display live data, create cache
-- **Result**: Green "Live" indicator, current percentage
-
-### Scenario 2: API Down, Cache Exists
-- **Expected**: Load cache, show "Telemetry Link Lost" alert
-- **Result**: Red "Cached" indicator, stale warning, last known data
-
-### Scenario 3: API Down, No Cache
-- **Expected**: Display error message, 0% status
-- **Result**: Error alerts, graceful failure message
-
-### Scenario 4: Critical Level (≥90%)
-- **Expected**: Blinking warning, red progress bar
-- **Result**: Animated alert at top of page
-
-### Scenario 5: Theme Switching
-- **Expected**: Dark theme with neon effects
-- **Result**: Persisted via cookie, starry background
-
 
 ## Reflection & Learning
-
-### Key Takeaways
-
-**1. Reliability Without Complexity**:
-- Simple file-based caching provides surprisingly robust fallback
-- No database needed for basic persistence
-- Explicit error states better than silent failures
-
-**2. PHP-Only Auto-Refresh**:
-- Meta refresh tag is underutilized but effective
-- No need for JavaScript polling or WebSockets for simple use cases
-- Reduces attack surface (XSS risks)
-
-**3. Bootstrap as Design System**:
-- Pre-built components accelerate development
-- Consistent design language out of the box
-- Easy theming with CSS variables
-
-**4. Security by Default**:
-- Validating inputs at boundaries prevents many issues
-- Escaping outputs is non-negotiable
-- Logging errors without exposing them to users
 
 ### Challenges Solved
 
@@ -231,21 +123,9 @@ Return Error State (0%, error status)
 **Challenge**: Handling API unavailability gracefully?
 - **Solution**: Multi-level fallback (live → cache → error state)
 
-**Challenge**: Creating engaging UI with Bootstrap alone?
-- **Solution**: Custom CSS variables, animations, and themes
+**Challenge**: Working with an ai that can halucinate?
+- **Solution**: Review the code, double check
 
-## Educational Context
-
-This project was created as a student assignment to explore:
-- **Web architecture patterns** (MVC-inspired separation)
-- **Error handling strategies** (defensive programming)
-- **Caching mechanisms** (simple file-based persistence)
-- **Security boundaries** (input validation, output escaping)
-- **Modern CSS** (animations, variables, responsive design)
-
-## 📄 License
-
-This is an educational project. Feel free to modify and experiment!
 
 ## Acknowledgments
 
