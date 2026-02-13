@@ -1,1 +1,17 @@
+# Cache files
+storage/last_tank_status.json
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Vendor
 vendor
