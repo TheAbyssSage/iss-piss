@@ -60,11 +60,11 @@ iss-piss/
 
 3. **Start the PHP development server**:
    ```bash
-   php -S localhost:8080 -t public
+   php -S localhost:8000
    ```
 
 4. **Open in browser**:
-   Navigate to `http://localhost:8080`
+   Navigate to `http://localhost:8000/public/index.php`
 
 ## Configuration
 
@@ -72,8 +72,7 @@ All configuration is centralized in `config.php`:
 
 | Constant | Default | Description |
 |----------|---------|-------------|
-| `TELEMETRY_API_URL` | `https://gigazane.net/gsc_news/en/20241225-pissstream/` | Remote API endpoint |
-| `REFRESH_INTERVAL` | `10` | Auto-refresh interval (seconds) |
+| `REFRESH_INTERVAL` | `5` | Auto-refresh interval (seconds) |
 | `CRITICAL_THRESHOLD` | `90` | Warning threshold (%) |
 | `CACHE_FILE_PATH` | `storage/last_tank_status.json` | Cache location |
 | `DISPLAY_TIMEZONE` | `UTC` | Timezone for timestamps |
@@ -82,7 +81,7 @@ All configuration is centralized in `config.php`:
 ## Architecture & Design Decisions
 
 ### Request Flow
-1. Browser requests `index.php`
+1. Browser requests `public/index.php`
 2. `TelemetryClient` attempts to fetch from remote API
 3. On success: parses data, updates cache, returns fresh `TankStatus`
 4. On failure: loads from cache, marks as stale/error
