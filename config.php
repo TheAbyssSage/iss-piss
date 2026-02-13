@@ -12,7 +12,7 @@
 define('TELEMETRY_API_URL', 'http://localhost:9000');
 
 // Refresh interval in seconds (how often the page auto-refreshes)
-define('REFRESH_INTERVAL', 10);
+define('REFRESH_INTERVAL', 2);
 
 // Threshold percentage for "almost full" warning (90%)
 define('CRITICAL_THRESHOLD', 90);
