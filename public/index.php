@@ -805,28 +805,6 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
 
         <div class="status-text"></div>
 
-        <div class="frequency-spectrum">
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-            <div class="frequency-bar"></div>
-        </div>
 
         <div class="data-chips">
             <div class="data-chip">STATUS: IDLE [0x4F]</div>
@@ -988,7 +966,7 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
         <!-- Footer -->
         <div class="footer">
             <div style="margin-bottom: 0.5rem;">
-                POWERED BY PHP TELEMETRY ENGINE v8.4 // ANTIGRAVITY AI // BOOTSTRAP FRAMEWORK
+                POWERED BY PHP TELEMETRY ENGINE v8.4 // BOOTSTRAP FRAMEWORK
             </div>
             <div style="opacity: 0.6;">
                 Educational Research Project // Space Systems Monitoring
