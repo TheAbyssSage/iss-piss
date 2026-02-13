@@ -7,9 +7,8 @@
  */
 
 // Remote telemetry endpoint URL
-// Using local mock for testing - replace with real URL when available
 // Real URL: https://gigazine.net/gsc_news/en/20241225-pissstream/
-define('TELEMETRY_API_URL', 'http://localhost:9000');
+define('TELEMETRY_API_URL', 'https://gigazine.net/gsc_news/en/20241225-pissstream/');
 
 // Refresh interval in seconds (how often the page auto-refreshes)
 define('REFRESH_INTERVAL', 2);

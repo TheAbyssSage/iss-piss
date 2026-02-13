@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ISS Telemetry System v2.0
  * 
@@ -46,6 +47,9 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
         rel="stylesheet">
 
+    <!-- Lightstreamer Client -->
+    <script src="https://unpkg.com/lightstreamer-client-web/lightstreamer.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -54,24 +58,35 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
         }
 
         :root {
-            --bg-main: #0a0b0f;
-            --bg-panel: #13151d;
-            --border-color: #00e5ff;
-            --text-primary: #ffffff;
-            --text-secondary: #7dd3fc;
-            --text-dim: #64748b;
-            --accent-cyan: #00e5ff;
-            --accent-green: #00ff9f;
-            --accent-yellow: #fbbf24;
-            --accent-red: #ef4444;
-            --glow-cyan: rgba(0, 229, 255, 0.5);
-            --glow-green: rgba(0, 255, 159, 0.5);
+            --bg-main: #ffffff;
+            --bg-panel: #f4f4f4;
+            --border-color: #111111;
+            --text-primary: #111111;
+            --text-secondary: #333333;
+            --text-dim: #777777;
+            --accent-cyan: #111111;
+            /* main accent becomes near-black */
+            --accent-green: #111111;
+            --accent-yellow: #999999;
+            --accent-red: #cc0000;
+            --glow-cyan: rgba(0, 0, 0, 0.08);
+            --glow-green: rgba(0, 0, 0, 0.08);
         }
 
         [data-theme="astronaut"] {
-            --border-color: #00ff9f;
-            --text-secondary: #00ff9f;
-            --accent-cyan: #00ff9f;
+            --bg-main: #050505;
+            --bg-panel: #101010;
+            --border-color: #ffffff;
+            --text-primary: #f5f5f5;
+            --text-secondary: #e0e0e0;
+            --text-dim: #8a8a8a;
+            --accent-cyan: #ffffff;
+            /* main accent becomes white */
+            --accent-green: #ffffff;
+            --accent-yellow: #b0b0b0;
+            --accent-red: #ff5555;
+            --glow-cyan: rgba(255, 255, 255, 0.25);
+            --glow-green: rgba(255, 255, 255, 0.25);
         }
 
         body {
@@ -400,6 +415,10 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
                 filter: brightness(1.2);
                 transform: scale(1.02);
             }
+        }
+
+        .tank-percentage.normal {
+            animation: percentageGlow 3s ease-in-out infinite;
         }
 
         .tank-percentage.critical {
@@ -752,231 +771,254 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
 </head>
 
 <body>
-    <!-- Grid Plane Background -->
-    <div class="grid-plane"></div>
-
-    <!-- Multi-layer Stars -->
-    <div class="stars-container">
-        <div class="star-layer"></div>
-        <div class="star-layer"></div>
-        <div class="star-layer"></div>
-    </div>
-
-    <!-- Holographic Checkbox Control -->
-    <div class="checkbox-container">
-        <input class="holo-checkbox-input" id="holo-check" type="checkbox" />
-        <label class="holo-checkbox" for="holo-check">
-            <div class="holo-box">
-                <div class="holo-inner"></div>
-                <div class="scan-effect"></div>
-
-                <div class="holo-particles">
-                    <div class="holo-particle"></div>
-                    <div class="holo-particle"></div>
-                    <div class="holo-particle"></div>
-                    <div class="holo-particle"></div>
-                    <div class="holo-particle"></div>
-                    <div class="holo-particle"></div>
-                </div>
-
-                <div class="activation-rings">
-                    <div class="activation-ring"></div>
-                    <div class="activation-ring"></div>
-                    <div class="activation-ring"></div>
-                </div>
-
-                <div class="cube-transform">
-                    <div class="cube-face"></div>
-                    <div class="cube-face"></div>
-                    <div class="cube-face"></div>
-                    <div class="cube-face"></div>
-                    <div class="cube-face"></div>
-                    <div class="cube-face"></div>
-                </div>
-            </div>
-
-            <div class="corner-accent"></div>
-            <div class="corner-accent"></div>
-            <div class="corner-accent"></div>
-            <div class="corner-accent"></div>
-
-            <div class="holo-glow"></div>
-        </label>
-
-        <div class="status-text"></div>
-
-
-        <div class="data-chips">
-            <div class="data-chip">STATUS: IDLE [0x4F]</div>
-            <div class="data-chip">QUANTUM VERIFY: 82.6%</div>
-            <div class="data-chip">SYNCH: PENDING</div>
-            <div class="data-chip">0x7A2C8B9F</div>
-        </div>
-    </div>
-
-    <!-- Floating Particles -->
-    <?php for ($i = 0; $i < 15; $i++): ?>
-        <div class="particle"
-            style="left: <?= rand(0, 100) ?>%; animation-delay: <?= rand(0, 10) ?>s; animation-duration: <?= rand(8, 15) ?>s;">
-        </div>
-    <?php endfor; ?>
-
-    <!-- Theme Toggle -->
-    <div class="theme-toggle">
-        <?php if ($currentTheme === 'astronaut'): ?>
-            <a href="?mode=default" class="theme-btn">
-                GROUND MODE
-            </a>
-        <?php else: ?>
-            <a href="?mode=astronaut" class="theme-btn">
-                ASTRONAUT MODE
-            </a>
-        <?php endif; ?>
-    </div>
-
     <div class="container">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <a href="?mode=<?= $currentTheme === 'default' ? 'astronaut' : 'default' ?>" class="theme-btn">
+                MODE: <?= strtoupper($currentTheme === 'default' ? 'ASTRONAUT' : 'DEFAULT') ?>
+            </a>
+        </div>
+
         <!-- Header -->
-        <div class="header">
-            <h1 class="header-title">ISS TELEMETRY SYSTEM</h1>
-            <div class="header-subtitle">WASTE WATER TANK MONITORING // v2.0</div>
+        <header class="header">
+            <div class="header-title">ISS TELEMETRY SYSTEM v2.0</div>
+            <div class="header-subtitle">
+                WASTE WATER MANAGEMENT · MODULE: LIFE SUPPORT · CHANNEL: NODE3000005
+            </div>
             <div class="system-time">
-                SYSTEM TIME: <?= date('Y.m.d // H:i:s') ?> UTC
+                SYSTEM TIME: <?= date('Y-m-d H:i:s') ?> UTC
             </div>
-        </div>
+        </header>
 
-        <!-- Critical Alert -->
-        <?php if ($status->isCritical()): ?>
-            <div class="critical-alert">
-                <div class="alert-title">⚠ CRITICAL WARNING</div>
-                <div style="font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; color: #ffffff;">
-                    TANK CAPACITY AT <?= $status->level ?>% // IMMEDIATE ACTION REQUIRED
-                </div>
+        <!-- Optional critical alert when tank is high -->
+        <?php
+        $level = (float)$status->level;
+        $levelClass = 'normal';
+        if ($level >= 90) {
+            $levelClass = 'critical';
+        } elseif ($level >= 70) {
+            $levelClass = 'warning';
+        }
+        ?>
+        <?php if ($levelClass === 'critical'): ?>
+            <section class="critical-alert">
+                <div class="alert-title">CRITICAL LEVEL REACHED</div>
+                <p>
+                    URINE TANK CAPACITY ABOVE 90%.<br>
+                    IMMEDIATE TRANSFER TO PROCESSING MODULE REQUIRED.
+                </p>
+            </section>
+        <?php elseif ($levelClass === 'warning'): ?>
+            <section class="status-alert">
+                <span class="status-indicator live"></span>
+                CAUTION: URINE TANK ABOVE 70% CAPACITY. PREPARE TRANSFER SEQUENCE.
+            </section>
+        <?php else: ?>
+            <section class="status-alert">
+                <span class="status-indicator live"></span>
+                SYSTEM NOMINAL. ALL WASTE WATER PARAMETERS WITHIN EXPECTED RANGE.
+            </section>
+        <?php endif; ?>
+
+        <!-- Main telemetry panel -->
+        <main class="main-panel">
+            <h2 class="panel-title">WASTE WATER TANK STATUS</h2>
+
+            <!-- Tank display -->
+            <section class="tank-display">
                 <div
-                    style="font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; color: #fca5a5; margin-top: 0.5rem;">
-                    WASTE WATER TANK APPROACHING MAXIMUM CAPACITY
+                    id="tankPercentage"
+                    class="tank-percentage <?= htmlspecialchars($levelClass) ?>">
+                    <?= (int)$level ?>%
                 </div>
-            </div>
-        <?php endif; ?>
+                <div class="tank-label">URINE TANK FILL LEVEL</div>
+            </section>
 
-        <!-- Status Alerts -->
-        <?php if ($status->sourceStatus === 'error'): ?>
-            <div class="status-alert" style="border-left-color: var(--accent-red);">
-                <div style="color: var(--accent-red); font-weight: 600; margin-bottom: 0.3rem;">
-                    ⬢ TELEMETRY LINK: DISCONNECTED
-                </div>
-                <div>
-                    Connection to ISS telemetry system unavailable // Displaying cached data
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($status->isStale && $status->sourceStatus !== 'error'): ?>
-            <div class="status-alert">
-                <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 0.3rem;">
-                    ⬢ DATA STATUS: STALE
-                </div>
-                <div>
-                    Displayed information may not reflect current system state
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <!-- Main Panel -->
-        <div class="main-panel">
-            <div class="panel-title">// TANK STATUS //</div>
-
-            <!-- Tank Percentage Display -->
-            <div class="tank-display">
-                <div
-                    class="tank-percentage <?= $status->level >= 90 ? 'critical' : ($status->level >= 70 ? 'warning' : '') ?>">
-                    <?= $status->level ?><span style="font-size: 0.5em;">%</span>
-                </div>
-                <div class="tank-label">CAPACITY UTILIZATION</div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-container">
+            <!-- Progress bar -->
+            <section class="progress-container">
                 <div class="progress-bar-custom">
-                    <div class="progress-fill <?= $status->level >= 90 ? 'critical' : ($status->level >= 70 ? 'warning' : '') ?>"
-                        style="width: <?= $status->level ?>%;">
+                    <div
+                        id="progressFill"
+                        class="progress-fill <?= htmlspecialchars($levelClass) ?>"
+                        style="width: <?= max(0, min(100, $level)) ?>%;">
                     </div>
-                    <div class="progress-text"><?= $status->level ?>% FULL</div>
-                </div>
-            </div>
-
-            <!-- Data Grid -->
-            <div class="data-grid">
-                <div class="data-cell">
-                    <div class="data-label">SYSTEM STATUS</div>
-                    <div class="data-value">
-                        <?php if ($status->level < 70): ?>
-                            ✓ NOMINAL
-                        <?php elseif ($status->level < 90): ?>
-                            ⚠ CAUTION
-                        <?php else: ?>
-                            ⚠ CRITICAL
-                        <?php endif; ?>
+                    <div class="progress-text" id="progressText">
+                        <?= (int)$level ?>%
                     </div>
                 </div>
+            </section>
 
+            <!-- Data grid -->
+            <section class="data-grid">
                 <div class="data-cell">
-                    <div class="data-label">DATA SOURCE</div>
+                    <div class="data-label">TELEMETRY SOURCE</div>
                     <div class="data-value">
-                        <span class="status-indicator <?= $status->sourceStatus === 'ok' ? 'live' : 'cached' ?>"></span>
-                        <?= $status->sourceStatus === 'ok' ? 'LIVE FEED' : 'CACHED DATA' ?>
+                        <span id="telemetryStatusDot" class="status-indicator live"></span>
+                        <span id="telemetryStatusText">LIVE STREAM</span>
                     </div>
                 </div>
 
                 <div class="data-cell">
-                    <div class="data-label">REFRESH RATE</div>
-                    <div class="data-value">
-                        <?= REFRESH_INTERVAL ?>s
+                    <div class="data-label">LAST UPDATE (RELATIVE)</div>
+                    <div class="data-value" id="relativeUpdate">
+                        <?= $secondsAgo ?>s AGO
                     </div>
                 </div>
 
                 <div class="data-cell">
-                    <div class="data-label">TANK ID</div>
-                    <div class="data-value">
-                        WWT-001
+                    <div class="data-label">LAST UPDATE (ABSOLUTE)</div>
+                    <div class="data-value" id="absoluteUpdate">
+                        <?= htmlspecialchars($status->updatedAt) ?>
                     </div>
                 </div>
-            </div>
 
-            <!-- Timestamp -->
-            <div class="timestamp-display">
-                <div class="timestamp-label">LAST DATA SYNC</div>
-                <div class="timestamp-value"><?= htmlspecialchars($status->getFormattedTime()) ?></div>
+                <div class="data-cell">
+                    <div class="data-label">CHANNEL / NODE</div>
+                    <div class="data-value">
+                        ISSLIVE · NODE3000005
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timestamp + refresh info -->
+            <section class="timestamp-display">
+                <div class="timestamp-label">PAGE REFRESH CYCLE</div>
+                <div class="timestamp-value">
+                    AUTO-REFRESH EVERY <?= (int)REFRESH_INTERVAL ?> SECONDS
+                </div>
                 <div class="refresh-notice">
-                    AUTO-REFRESH ENABLED // NEXT SYNC IN <?= REFRESH_INTERVAL ?>s
+                    PASSIVE FAIL-SAFE MODE: DATA STREAM RECOVERY ATTEMPTED IF CONNECTION LOST.
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Info Panel -->
-        <div class="info-panel">
-            <div class="info-title">⬡ SYSTEM INFORMATION</div>
-            <div>
-                This interface monitors the International Space Station's waste water tank in real-time.
-                The system automatically refreshes every <?= REFRESH_INTERVAL ?> seconds without requiring
-                user interaction. When telemetry link is unavailable, the display shows last known cached
-                data with appropriate status indicators.
-            </div>
-        </div>
+            <!-- Info panel -->
+            <section class="info-panel">
+                <div class="info-title">SYSTEM NOTES</div>
+                <p>
+                    This console subscribes to the ISSLIVE telemetry stream via Lightstreamer and displays
+                    the current urine tank fill level in real-time. In case of connectivity issues, cached
+                    PHP telemetry values are displayed until the stream handshake succeeds.
+                </p>
+                <p>
+                    Adapted from
+                    <a href="https://github.com/Jaennaet/pISSStream" target="_blank" rel="noreferrer">
+                        pISSStream
+                    </a>
+                    by
+                    <a href="https://github.com/Jaennaet" target="_blank" rel="noreferrer">
+                        Jännät
+                    </a>.
+                </p>
+            </section>
+        </main>
 
         <!-- Footer -->
-        <div class="footer">
-            <div style="margin-bottom: 0.5rem;">
-                POWERED BY PHP TELEMETRY ENGINE v8.4 // BOOTSTRAP FRAMEWORK
-            </div>
-            <div style="opacity: 0.6;">
-                Educational Research Project // Space Systems Monitoring
-            </div>
-            <div style="margin-top: 1rem; opacity: 0.5;">
-                DATA SOURCE: <a href="<?= htmlspecialchars(TELEMETRY_API_URL) ?>" target="_blank">ISS Telemetry
-                    Stream</a>
-            </div>
-        </div>
+        <footer class="footer">
+            ISS LIFE SUPPORT TELEMETRY INTERFACE · BUILD 2.0 · ALL SYSTEMS UNDER SURVEILLANCE
+        </footer>
     </div>
+
+    <!-- Lightstreamer logic -->
+    <script>
+        var client = new LightstreamerClient("https://push.lightstreamer.com", "ISSLIVE");
+        client.connect();
+
+        var sub = new Subscription("MERGE", ["NODE3000005"], ["Value"]);
+        sub.setRequestedSnapshot("yes");
+        sub.addListener({
+            onItemUpdate: function(obj) {
+                var value = obj.getValue("Value");
+                if (value !== null) {
+                    var numericValue = parseFloat(value);
+                    if (isNaN(numericValue)) {
+                        return;
+                    }
+
+                    // Clamp between 0–100
+                    numericValue = Math.max(0, Math.min(100, numericValue));
+
+                    var levelClass = "normal";
+                    if (numericValue >= 90) {
+                        levelClass = "critical";
+                    } else if (numericValue >= 70) {
+                        levelClass = "warning";
+                    }
+
+                    var tankEl = document.getElementById("tankPercentage");
+                    var fillEl = document.getElementById("progressFill");
+                    var textEl = document.getElementById("progressText");
+                    var relUpdateEl = document.getElementById("relativeUpdate");
+                    var teleDot = document.getElementById("telemetryStatusDot");
+                    var teleText = document.getElementById("telemetryStatusText");
+
+                    // Update percentage display
+                    tankEl.textContent = Math.round(numericValue) + "%";
+                    textEl.textContent = Math.round(numericValue) + "%";
+                    fillEl.style.width = numericValue + "%";
+
+                    // Reset classes
+                    tankEl.classList.remove("critical", "warning");
+                    fillEl.classList.remove("critical", "warning");
+
+                    if (levelClass === "critical") {
+                        tankEl.classList.add("critical");
+                        fillEl.classList.add("critical");
+                    } else if (levelClass === "warning") {
+                        tankEl.classList.add("warning");
+                        fillEl.classList.add("warning");
+                    }
+
+                    // Mark as live
+                    teleDot.classList.remove("cached");
+                    teleDot.classList.add("live");
+                    teleText.textContent = "LIVE STREAM";
+
+                    // Show that this update is “just now”
+                    relUpdateEl.textContent = "JUST NOW";
+                }
+            },
+            onSubscription: function() {
+                console.log("Subscribed successfully!");
+            },
+            onSubscriptionError: function(code, message) {
+                console.error("Subscription error:", code, message);
+                setTelemetryError("SUBSCRIPTION ERROR");
+            }
+        });
+        client.subscribe(sub);
+
+        client.addListener({
+            onServerError: function(code, message) {
+                console.error("Lightstreamer server error:", code, message);
+                setTelemetryError("SERVER ERROR");
+            },
+            onStatusChange: function(newStatus) {
+                console.log("Status changed to:", newStatus);
+                if (newStatus === "DISCONNECTED" || newStatus === "STALLED") {
+                    setTelemetryError("DISCONNECTED");
+                } else if (newStatus === "CONNECTING") {
+                    setTelemetryConnecting();
+                }
+            }
+        });
+
+        function setTelemetryError(label) {
+            var teleDot = document.getElementById("telemetryStatusDot");
+            var teleText = document.getElementById("telemetryStatusText");
+            teleDot.classList.remove("live");
+            teleDot.classList.add("cached");
+            teleText.textContent = "ERROR · " + label;
+        }
+
+        function setTelemetryConnecting() {
+            var teleDot = document.getElementById("telemetryStatusDot");
+            var teleText = document.getElementById("telemetryStatusText");
+            teleDot.classList.remove("live", "cached");
+            teleText.textContent = "CONNECTING…";
+        }
+    </script>
 </body>
+
+</html>
 
 </html>
