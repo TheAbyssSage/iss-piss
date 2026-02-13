@@ -1,8 +1,8 @@
-# 🚽 ISS Pee Telemetry Dashboard
+**# ISS Pee Telemetry Dashboard
 
 A PHP-based web application for monitoring the International Space Station's waste water (pee) tank status in real-time. This project demonstrates reliability patterns, error handling, and modern web design using pure PHP and Bootstrap - no JavaScript required!
 
-## 🌟 Features
+## Features
 
 ### Core Functionality
 - **Real-time Telemetry Monitoring**: Fetches live data from the ISS pee stream API
@@ -29,7 +29,7 @@ A PHP-based web application for monitoring the International Space Station's was
   - Neon green accents with glowing text effects
   - Toggle via button or cookie persistence
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 iss-piss/
@@ -44,7 +44,7 @@ iss-piss/
 └── .gitignore
 ```
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - PHP 8.0 or higher
@@ -71,7 +71,7 @@ iss-piss/
 4. **Open in browser**:
    Navigate to `http://localhost:8080`
 
-## ⚙️ Configuration
+## Configuration
 
 All configuration is centralized in `config.php`:
 
@@ -83,7 +83,7 @@ All configuration is centralized in `config.php`:
 | `CACHE_FILE_PATH` | `storage/last_tank_status.json` | Cache location |
 | `DISPLAY_TIMEZONE` | `UTC` | Timezone for timestamps |
 
-## 🏗️ Architecture & Design Decisions
+## Architecture & Design Decisions
 
 ### Request Flow
 1. Browser requests `index.php`
@@ -154,7 +154,7 @@ Return Error State (0%, error status)
 - API down with cache: Shows last known data with "stale" warning
 - API up: Normal operation with green indicators
 
-## 🎨 UI/UX Highlights
+## UI/UX Highlights
 
 ### Bootstrap Components Used
 - Container/Grid system for responsive layout
@@ -176,7 +176,7 @@ Return Error State (0%, error status)
 | 70-89% | Yellow | `bg-warning` | Caution needed |
 | 90-100% | Red | `bg-danger` | Critical - urgent attention |
 
-## 🧪 Testing Scenarios
+## Testing Scenarios
 
 ### Scenario 1: First Run (No Cache, API Available)
 - **Expected**: Fetch from API, display live data, create cache
@@ -198,18 +198,8 @@ Return Error State (0%, error status)
 - **Expected**: Dark theme with neon effects
 - **Result**: Persisted via cookie, starry background
 
-## 🔮 Future Enhancements
 
-Potential improvements for v2:
-- [ ] Historical data graphs (using Chart.js or similar)
-- [ ] Email/SMS alerts when critical threshold reached
-- [ ] Multiple tank monitoring
-- [ ] API authentication support
-- [ ] WebSocket for true real-time updates
-- [ ] Admin panel for threshold configuration
-- [ ] Prometheus metrics export
-
-## 📝 Reflection & Learning
+## Reflection & Learning
 
 ### Key Takeaways
 
@@ -244,7 +234,7 @@ Potential improvements for v2:
 **Challenge**: Creating engaging UI with Bootstrap alone?
 - **Solution**: Custom CSS variables, animations, and themes
 
-## 👨‍🎓 Educational Context
+## Educational Context
 
 This project was created as a student assignment to explore:
 - **Web architecture patterns** (MVC-inspired separation)
@@ -257,7 +247,7 @@ This project was created as a student assignment to explore:
 
 This is an educational project. Feel free to modify and experiment!
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **ISS Pee Stream API**: Thanks to the team providing this quirky but fascinating data
 - **Bootstrap**: For making beautiful UIs accessible to everyone
@@ -269,3 +259,4 @@ This is an educational project. Feel free to modify and experiment!
 **Built with PHP + Bootstrap + Pure CSS 🚀**
 
 *"One small drip for man, one giant flush for mankind."*
+**
