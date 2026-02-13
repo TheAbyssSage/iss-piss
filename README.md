@@ -1,4 +1,4 @@
-**# ISS Pee Telemetry Dashboard
+# ISS Pee Telemetry Dashboard
 
 A PHP-based web application for monitoring the International Space Station's waste water (pee) tank status in real-time. This project demonstrates reliability patterns, error handling, and modern web design using pure PHP and Bootstrap - no JavaScript required!
 
