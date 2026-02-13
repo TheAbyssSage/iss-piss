@@ -6,7 +6,7 @@ A PHP-based web application for monitoring the International Space Station's was
 
 ### Core Functionality
 - **Real-time Telemetry Monitoring**: Fetches live data from the ISS pee stream API
-- **Auto-refresh**: Page automatically updates every 10 seconds using HTML meta tags (no JavaScript)
+- **Auto-refresh**: Page automatically updates every 2 seconds using HTML meta tags (no JavaScript)
 - **Visual Indicators**: 
   - Color-coded progress bar (green → yellow → red)
   - Large percentage display
