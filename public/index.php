@@ -800,25 +800,10 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
             $levelClass = 'warning';
         }
         ?>
-        <?php if ($levelClass === 'critical'): ?>
-            <section class="critical-alert">
-                <div class="alert-title">CRITICAL LEVEL REACHED</div>
-                <p>
-                    URINE TANK CAPACITY ABOVE 90%.<br>
-                    IMMEDIATE TRANSFER TO PROCESSING MODULE REQUIRED.
-                </p>
-            </section>
-        <?php elseif ($levelClass === 'warning'): ?>
-            <section class="status-alert">
-                <span class="status-indicator live"></span>
-                CAUTION: URINE TANK ABOVE 70% CAPACITY. PREPARE TRANSFER SEQUENCE.
-            </section>
-        <?php else: ?>
-            <section class="status-alert">
-                <span class="status-indicator live"></span>
-                SYSTEM NOMINAL. ALL WASTE WATER PARAMETERS WITHIN EXPECTED RANGE.
-            </section>
-        <?php endif; ?>
+        <section id="statusAlert" class="status-alert" style="display: none;">
+            <span class="status-indicator live"></span>
+            <span id="statusAlertText">CONNECTING TO STREAM...</span>
+        </section>
 
         <!-- Main telemetry panel -->
         <main class="main-panel">
@@ -828,8 +813,8 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
             <section class="tank-display">
                 <div
                     id="tankPercentage"
-                    class="tank-percentage <?= htmlspecialchars($levelClass) ?>">
-                    <?= (int)$level ?>%
+                    class="tank-percentage normal">
+                    Loading...
                 </div>
                 <div class="tank-label">URINE TANK FILL LEVEL</div>
             </section>
@@ -839,11 +824,11 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
                 <div class="progress-bar-custom">
                     <div
                         id="progressFill"
-                        class="progress-fill <?= htmlspecialchars($levelClass) ?>"
-                        style="width: <?= max(0, min(100, $level)) ?>%;">
+                        class="progress-fill normal"
+                        style="width: 0%;">
                     </div>
                     <div class="progress-text" id="progressText">
-                        <?= (int)$level ?>%
+                        Loading...
                     </div>
                 </div>
             </section>
@@ -938,10 +923,16 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
                     numericValue = Math.max(0, Math.min(100, numericValue));
 
                     var levelClass = "normal";
+                    var statusText = "SYSTEM NOMINAL. ALL WASTE WATER PARAMETERS WITHIN EXPECTED RANGE.";
+                    var showCriticalAlert = false;
+                    
                     if (numericValue >= 90) {
                         levelClass = "critical";
+                        statusText = "CAUTION: URINE TANK ABOVE 90% CAPACITY. IMMEDIATE ACTION REQUIRED.";
+                        showCriticalAlert = true;
                     } else if (numericValue >= 70) {
                         levelClass = "warning";
+                        statusText = "CAUTION: URINE TANK ABOVE 70% CAPACITY. PREPARE TRANSFER SEQUENCE.";
                     }
 
                     var tankEl = document.getElementById("tankPercentage");
@@ -950,6 +941,8 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
                     var relUpdateEl = document.getElementById("relativeUpdate");
                     var teleDot = document.getElementById("telemetryStatusDot");
                     var teleText = document.getElementById("telemetryStatusText");
+                    var statusAlert = document.getElementById("statusAlert");
+                    var statusAlertText = document.getElementById("statusAlertText");
 
                     // Update percentage display
                     tankEl.textContent = Math.round(numericValue) + "%";
@@ -975,6 +968,9 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
 
                     // Show that this update is “just now”
                     relUpdateEl.textContent = "JUST NOW";
+                    
+                    // Update status alert
+                    updateStatusAlert(statusText, levelClass, showCriticalAlert);
                 }
             },
             onSubscription: function() {
@@ -1015,6 +1011,21 @@ $secondsAgo = ($interval->days * 86400) + ($interval->h * 3600) + ($interval->i 
             var teleText = document.getElementById("telemetryStatusText");
             teleDot.classList.remove("live", "cached");
             teleText.textContent = "CONNECTING…";
+        }
+
+        function updateStatusAlert(status, levelClass, showCritical) {
+            var statusAlert = document.getElementById("statusAlert");
+            var statusAlertText = document.getElementById("statusAlertText");
+            statusAlertText.textContent = status;
+            statusAlert.style.display = "block";
+            
+            if (showCritical) {
+                statusAlert.classList.add("critical-alert");
+                statusAlert.classList.remove("status-alert");
+            } else {
+                statusAlert.classList.remove("critical-alert");
+                statusAlert.classList.add("status-alert");
+            }
         }
     </script>
 </body>

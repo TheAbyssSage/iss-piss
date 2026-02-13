@@ -11,7 +11,7 @@
 define('TELEMETRY_API_URL', 'https://gigazine.net/gsc_news/en/20241225-pissstream/');
 
 // Refresh interval in seconds (how often the page auto-refreshes)
-define('REFRESH_INTERVAL', 2);
+define('REFRESH_INTERVAL', 5);
 
 // Threshold percentage for "almost full" warning (90%)
 define('CRITICAL_THRESHOLD', 90);
